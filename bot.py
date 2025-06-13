@@ -1,19 +1,20 @@
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
-from aiogram.types import Message, ContentType
 import logging
+import os
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import Message, ContentType
+from aiogram.utils import executor
 
-# Telegram bot tokenini shu yerga yozing
-API_TOKEN = '8093095032:AAEjxLVMzhRdKCpyGQ2SNyedppPPwSZQtaA'
+# Token environment variable (Render uses this)
+API_TOKEN = os.getenv("BOT_TOKEN")
 
-# Log yozuvlarini sozlash
+# Logging settings
 logging.basicConfig(level=logging.INFO)
 
-# Bot va Dispatcher obyektlari
+# Bot and Dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-# /start komandasi uchun handler
+# /start command
 @dp.message_handler(commands=['start'])
 async def start_handler(message: Message):
     await message.answer(
@@ -21,7 +22,7 @@ async def start_handler(message: Message):
         "Iltimos, muammoingizni matn yoki surat ko‘rinishida yuboring."
     )
 
-# Matnli xabarlar uchun handler
+# Text messages
 @dp.message_handler(content_types=ContentType.TEXT)
 async def text_handler(message: Message):
     await message.answer(
@@ -32,7 +33,7 @@ async def text_handler(message: Message):
         parse_mode="Markdown"
     )
 
-# Suratlar uchun handler
+# Photo messages
 @dp.message_handler(content_types=ContentType.PHOTO)
 async def photo_handler(message: Message):
     await message.answer(
