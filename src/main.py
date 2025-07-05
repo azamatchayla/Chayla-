@@ -29,7 +29,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo = update.message.photo[-1]
         file = await photo.get_file()
         file_bytes = BytesIO()
-        await file.download(out=file_bytes)
+        await file.download_to_memory(out=file_bytes)
+        
         file_bytes.seek(0)
 
         image = Image.open(file_bytes)
