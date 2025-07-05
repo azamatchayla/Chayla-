@@ -16,14 +16,14 @@ openai.api_key = OPENAI_API_KEY
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# User photo cache
+# Har bir userning rasmlarini vaqtincha saqlash
 user_photos = {}
 
-# /start
+# /start komandasi
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🌱 Chayla AI ishga tushdi. Surat yuboring, so‘ng izoh yoki savol yozing.")
+    await update.message.reply_text("🌱 Chayla AI bot ishga tushdi. Surat yuboring, so‘ng izoh yoki savolingizni yozing.")
 
-# Photo handler
+# Rasmni qabul qilish
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         photo = update.message.photo[-1]
@@ -42,58 +42,4 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text("✅ Surat qabul qilindi. Endi izoh yoki savolingizni yozing.")
     except Exception as e:
-        logger.error(f"Photo error: {e}")
-        await update.message.reply_text("❗ Suratni qabul qila olmadim. Qayta urinib ko‘ring.")
-
-# Text handler
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    text = update.message.text
-
-    try:
-        if user_id in user_photos:
-            # Rasm + matn birga yuboriladi
-            img_base64 = user_photos[user_id]
-            messages = [
-                {"role": "system", "content": "Sen Chayla AI botisan. Surat va matnga qarab, fermerga qishloq xo'jaligi bo'yicha foydali maslahat ber."},
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": text},
-                        {"type": "image_url", "image_url": f"data:image/jpeg;base64,{img_base64}"}
-                    ]
-                }
-            ]
-            del user_photos[user_id]
-        else:
-            # Faqat matn
-            messages = [
-                {"role": "system", "content": "Sen Chayla AI botisan. Qishloq xo'jaligi bo'yicha foydali maslahat ber."},
-                {"role": "user", "content": text}
-            ]
-
-        response = await openai.ChatCompletion.acreate(
-            model="gpt-4o",
-            messages=messages
-        )
-
-        reply = response.choices[0].message.content
-        await update.message.reply_text(reply)
-
-    except Exception as e:
-        logger.error(f"Text error: {e}")
-        await update.message.reply_text("❗ Javob bera olmadim. Keyinroq urinib ko‘ring.")
-
-# Run bot
-def main():
-    app = Application.builder().token(BOT_TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-
-    logger.info("Chayla AI bot ishga tushdi...")
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+        logger.error(f"Photo handling er
