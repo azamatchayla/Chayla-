@@ -42,7 +42,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text("✅ Surat qabul qilindi. Endi izoh yoki savolingizni yozing.")
     except Exception as e:
-        logger.error(f"Photo handling error: {e}")
-        await update.message.reply_text("❗ Suratni qabul qila olmadim. Qayta urinib ko‘ring.")
+     logger.error(f"Photo handling error: {e}")
+     await update.message.reply_text("❗ Suratni qabul qila olmadim. Qayta urinib ko‘ring.")
+
 
 
