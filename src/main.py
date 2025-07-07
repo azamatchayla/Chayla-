@@ -10,6 +10,8 @@ from telegram.ext import Application, MessageHandler, CommandHandler, filters, C
 # Tokenlar
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# OpenAI sozlash
 openai.api_key = OPENAI_API_KEY
 
 # Logging
@@ -30,9 +32,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         file = await photo.get_file()
         file_bytes = BytesIO()
         await file.download_to_memory(out=file_bytes)
-        
-        file_bytes.seek(0)
 
+        file_bytes.seek(0)
         image = Image.open(file_bytes)
         buffered = BytesIO()
         image.save(buffered, format="JPEG")
@@ -54,18 +55,17 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_message = update.message.text
         img_base64 = user_photos.get(user_id, None)
 
-        # OpenAI so‘rovi tayyorlash
         messages = [
             {"role": "system", "content": "Sen Chayla AI agrobotisan. Foydalanuvchining savoliga rasm va matn asosida aniq va qisqa javob ber."},
             {"role": "user", "content": f"Matn: {user_message}\nRasm (base64): {img_base64 if img_base64 else 'Rasm yuborilmagan'}"}
         ]
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4o",
             messages=messages
         )
 
-        reply_text = response["choices"][0]["message"]["content"]
+        reply_text = response.choices[0].message.content
         await update.message.reply_text(reply_text)
 
     except Exception as e:
