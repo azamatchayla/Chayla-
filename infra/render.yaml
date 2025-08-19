@@ -1,0 +1,36 @@
+# scripts/export_csv.py
+"""
+Lead bazasini CSV formatida vaqt tamg'asi bilan nusxalash.
+Terminaldan chaqiring:
+    python scripts/export_csv.py
+"""
+
+import csv
+from datetime import datetime
+from pathlib import Path
+
+from core.config import settings
+
+def export_all_leads() -> Path | None:
+    src = Path(settings.CSV_PATH)               # <-- config.py dagi nom
+    if not src.exists():
+        print(f"[!] {src} topilmadi. Hali hech qanday lead saqlanmagan.")
+        return None
+
+    out_dir = Path("exports")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    ts = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    dest = out_dir / f"leads_{ts}.csv"
+
+    with open(src, "r", encoding="utf-8") as f_in, open(dest, "w", newline="", encoding="utf-8") as f_out:
+        reader = csv.reader(f_in)
+        writer = csv.writer(f_out)
+        for row in reader:
+            writer.writerow(row)
+
+    print(f"[ok] Leadlar '{dest}' fayliga eksport qilindi.")
+    return dest
+
+if __name__ == "__main__":
+    export_all_leads()
